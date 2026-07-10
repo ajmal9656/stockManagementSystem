@@ -9,10 +9,10 @@ const storeSchema = new mongoose.Schema(
       trim: true,
     },
 
-    location: {
+    description: {
       type: String,
-      required: true,
       trim: true,
+      default: "",
     },
 
     status: {
