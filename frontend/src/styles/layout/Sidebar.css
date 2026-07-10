@@ -1,0 +1,21 @@
+.sidebar {
+    width: 220px;
+    background: #f3f3f3;
+    border-right: 1px solid #ccc;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    margin-bottom: 30px;
+}
+
+.sidebar a {
+    display: block;
+    text-decoration: none;
+    color: black;
+    padding: 10px 0;
+}
+
+.sidebar a.active {
+    font-weight: bold;
+}
