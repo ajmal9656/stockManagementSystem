@@ -1,8 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/authRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 
 const app = express();
@@ -19,6 +22,8 @@ app.use(
 );
 
 app.use("/api/auth", authRoutes);
+app.use("/api/product", productRoutes);
+
 
 app.get("/", (req, res) => {
   res.status(200).json({

@@ -10,7 +10,6 @@ export const register = async (data) => {
 };
 
 export const login = async (data) => {
-  console.log("login servic",data);
   
   const response = await axios.post(
     "/auth/login",
