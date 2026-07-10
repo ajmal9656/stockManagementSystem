@@ -32,7 +32,11 @@ function Register() {
     } catch (error) {
       console.log("err", error.response);
 
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(
+  error.response?.data?.errors?.[0]?.msg ||
+  error.response?.data?.message ||
+  "Something went wrong"
+);
     }
   };
 
