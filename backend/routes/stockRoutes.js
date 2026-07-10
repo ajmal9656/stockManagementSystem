@@ -3,7 +3,7 @@ import * as stockController from "../controllers/stockController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import adminMiddleware from "../middlewares/adminMiddleware.js";
 import validationMiddleware from "../middlewares/validationMiddleware.js";
-import { adjustStockValidator, assignProductValidator, availableProductsValidator } from "../validators/stockvalidator.js";
+import { adjustStockValidator, assignProductValidator, availableProductsValidator, availableStoresValidator, transferStockValidator } from "../validators/stockvalidator.js";
 
 
 
@@ -41,6 +41,24 @@ router.patch(
   adjustStockValidator,
   validationMiddleware,
   stockController.adjustStock
+);
+
+router.get(
+  "/availableStores/:stockId",
+  authMiddleware,
+  adminMiddleware,
+  availableStoresValidator,
+  validationMiddleware,
+  stockController.getAvailableStores
+);
+
+router.patch(
+  "/transferStock",
+  authMiddleware,
+  adminMiddleware,
+  transferStockValidator,
+  validationMiddleware,
+  stockController.transferStock
 );
 
 export default router;

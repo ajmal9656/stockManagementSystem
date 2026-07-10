@@ -47,3 +47,24 @@ export const adjustStock = async (data) => {
 
   return response.data;
 };
+
+export const getAvailableStores = async (
+  stockId
+) => {
+  console.log("enter");
+  
+  const response = await axios.get(
+    `/stock/availableStores/${stockId}`
+  );
+
+  return response.data;
+};
+
+export const transferStock = async (data) => {
+  const response = await axios.patch(
+    "/stock/transferStock",
+    data
+  );
+
+  return response.data;
+};

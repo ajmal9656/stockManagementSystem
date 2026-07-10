@@ -4,9 +4,10 @@ import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
 import "../../styles/stock/Stock.css";
-import { getAvailableProducts, getStocksByStore } from "../../services/stockService";
+import { getAvailableProducts, getAvailableStores, getStocksByStore } from "../../services/stockService";
 import AssignProductModal from "./AssignProductModal";
 import AdjustStockModal from "./AdjustStockModal";
+import TransferStockModal from "./TransferStockModal";
 
 function Stock() {
   console.log("Stock component rendered");
@@ -23,6 +24,8 @@ function Stock() {
 const [products, setProducts] = useState([]);
 const [showAdjustModal, setShowAdjustModal] = useState(false);
 const [selectedStock, setSelectedStock] = useState(null);
+const [showTransferModal, setShowTransferModal] = useState(false);
+const [availableStores, setAvailableStores] = useState([]);
 
   const fetchStocks = async (
     currentPage = page,
@@ -157,9 +160,34 @@ setStocks(response.data.stocks);
   Adjust
 </button>
 
-                    <button>
-                      Transfer
-                    </button>
+                    <button
+  onClick={async () => {
+    try {
+      const response = await getAvailableStores(
+        stock._id
+      );
+      console.log("store res",response);
+      
+
+      setAvailableStores(response.data);
+
+      setSelectedStock({
+        ...stock,
+        storeName,
+      });
+
+      setShowTransferModal(true);
+      console.log("Opening transfer modal...");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to fetch stores"
+      );
+    }
+  }}
+>
+  Transfer
+</button>
 
                   </td>
                 )}
@@ -224,6 +252,16 @@ setStocks(response.data.stocks);
   <AdjustStockModal
     onClose={() => setShowAdjustModal(false)}
     stock={selectedStock}
+    fetchStocks={fetchStocks}
+    page={page}
+    setPage={setPage}
+  />
+)}
+{showTransferModal && (
+  <TransferStockModal
+    onClose={() => setShowTransferModal(false)}
+    stock={selectedStock}
+    stores={availableStores}
     fetchStocks={fetchStocks}
     page={page}
     setPage={setPage}

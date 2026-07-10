@@ -33,3 +33,25 @@ export const adjustStockValidator = [
     .isInt({ min: 1 })
     .withMessage("Quantity must be greater than 0."),
 ];
+
+
+export const availableStoresValidator = [
+  param("stockId")
+    .isMongoId()
+    .withMessage("Invalid store."),
+];
+
+
+export const transferStockValidator = [
+  body("stockId")
+    .isMongoId()
+    .withMessage("Invalid stock."),
+
+  body("toStoreId")
+    .isMongoId()
+    .withMessage("Invalid destination store."),
+
+  body("quantity")
+    .isInt({ min: 1 })
+    .withMessage("Quantity must be greater than 0."),
+];

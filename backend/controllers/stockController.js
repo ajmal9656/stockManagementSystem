@@ -82,3 +82,44 @@ export const adjustStock = async (
     next(error);
   }
 };
+
+export const getAvailableStores = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const stores =
+      await stockService.getAvailableStores(
+        req.params.stockId
+      );
+      console.log("available stores",stores);
+      
+
+    return res.status(200).json({
+      success: true,
+      data: stores,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const transferStock = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const result =
+      await stockService.transferStock(req.body);
+
+    return res.status(200).json({
+      success: true,
+      message: "Stock transferred successfully.",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

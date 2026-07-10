@@ -157,7 +157,9 @@ export const adjustStock = async ({
   stockId,
   quantity,
 }) => {
-  const stock = await Stock.findById(stockId);
+  const stock = await Stock.findById(stockId)
+    .populate("store")
+    .populate("product");
 
   if (!stock) {
     const error = new Error("Stock not found.");
@@ -165,9 +167,71 @@ export const adjustStock = async ({
     throw error;
   }
 
+  if (stock.store.status !== "active") {
+    const error = new Error("Store is inactive.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (stock.product.status !== "active") {
+    const error = new Error("Product is inactive.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+
   stock.quantity += quantity;
 
   await stock.save();
 
   return stock;
 };
+
+
+
+export const getAvailableStores = async (
+  stockId
+) => {
+  const stock = await Stock.findById(stockId)
+    .populate("store")
+    .populate("product");
+
+  if (!stock) {
+    const error = new Error("Stock not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (stock.store.status !== STATUS.ACTIVE) {
+    const error = new Error("Store is inactive.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (stock.product.status !== STATUS.ACTIVE) {
+    const error = new Error("Product is inactive.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const stores = await Store.find({
+    _id: { $ne: stock.store._id },
+    status: STATUS.ACTIVE,
+  })
+    .select("name")
+    .sort({ name: 1 });
+
+  return stores;
+};
+
+
+
+export const transferStock = async ({
+  stockId,
+  toStoreId,
+  quantity,
+}) => {
+  return;
+ 
+};
+
