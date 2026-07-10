@@ -1,0 +1,75 @@
+* {
+  box-sizing: border-box;
+}
+
+.stock-page {
+  padding: 20px;
+}
+
+.stock-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.stock-header button {
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.stock-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stock-filter input {
+  width: 180px;
+  padding: 8px;
+}
+
+.stock-filter button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.stock-table th,
+.stock-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.stock-table th {
+  background: #f3f3f3;
+}
+
+.stock-table button {
+  padding: 5px 10px;
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.pagination button {
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
