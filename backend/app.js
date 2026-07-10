@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import storeRoutes from "./routes/storeRoutes.js";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 app.use("/api/product", productRoutes);
+app.use("/api/store", storeRoutes);
 
 
 app.get("/", (req, res) => {

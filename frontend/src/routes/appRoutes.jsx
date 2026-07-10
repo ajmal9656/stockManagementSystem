@@ -14,12 +14,12 @@ const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public */}
+
         <Route path="/" element={<Navigate to="/products" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected */}
+
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/products" element={<Product />} />
@@ -28,7 +28,7 @@ const AppRoutes = () => {
           </Route>
         </Route>
 
-        {/* Invalid Route */}
+
         <Route path="*" element={<Navigate to="/products" replace />} />
       </Routes>
     </BrowserRouter>
