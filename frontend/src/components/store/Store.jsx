@@ -7,12 +7,19 @@ import {
   addStore,
   getStores,
 } from "../../services/storeService";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+
 
 function Store() {
   const [showModal, setShowModal] = useState(false);
   const [stores, setStores] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
+
+  const { user } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -67,18 +74,20 @@ function Store() {
       <div className="store-header">
         <h2>Stores</h2>
 
-        <button onClick={() => setShowModal(true)}>
-          Add Store
-        </button>
+        {user?.role === "admin" && (
+  <button onClick={() => setShowModal(true)}>
+    Add Store
+  </button>
+)}
       </div>
 
       <table className="store-table">
         <thead>
           <tr>
             <th>Name</th>
-            <th>SKU</th>
             <th>Description</th>
             <th>Status</th>
+            <th>Action</th>
           </tr>
         </thead>
 
@@ -87,14 +96,26 @@ function Store() {
             stores.map((store) => (
               <tr key={store._id}>
                 <td>{store.name}</td>
-                <td>{store.sku}</td>
                 <td>{store.description}</td>
                 <td>{store.status}</td>
+                <td>
+  <button
+    onClick={() =>{
+      console.log(store._id);
+    console.log(`/store/stocks/${store._id}`);
+      navigate(`/store/stocks/${store._id}`)}
+    }
+  >
+    {user?.role === "admin"
+    ? "Manage Stocks"
+    : "View Stocks"}
+  </button>
+</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="4">No stores found.</td>
+              <td colSpan="5">No stores found.</td>
             </tr>
           )}
         </tbody>

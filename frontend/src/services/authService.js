@@ -18,3 +18,11 @@ export const login = async (data) => {
 
   return response.data;
 };
+
+export const logout = async () => {
+  const response = await axios.post(
+    "/auth/logout"
+  );
+
+  return response.data;
+};

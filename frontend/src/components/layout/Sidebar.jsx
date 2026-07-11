@@ -12,11 +12,7 @@ function Sidebar() {
       </NavLink>
 
       <NavLink to="/stores">
-        Stores
-      </NavLink>
-
-      <NavLink to="/stock">
-        Stock
+        Stores & Stocks
       </NavLink>
 
     </div>

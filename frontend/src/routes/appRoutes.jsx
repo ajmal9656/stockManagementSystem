@@ -24,7 +24,7 @@ const AppRoutes = () => {
           <Route element={<DashboardLayout />}>
             <Route path="/products" element={<Product />} />
             <Route path="/stores" element={<Store />} />
-            <Route path="/stock" element={<Stock />} />
+            <Route path="/store/stocks/:storeId" element={<Stock />} />
           </Route>
         </Route>
 
