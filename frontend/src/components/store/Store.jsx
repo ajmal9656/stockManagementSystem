@@ -101,8 +101,7 @@ function Store() {
                 <td>
   <button
     onClick={() =>{
-      console.log(store._id);
-    console.log(`/store/stocks/${store._id}`);
+
       navigate(`/store/stocks/${store._id}`)}
     }
   >

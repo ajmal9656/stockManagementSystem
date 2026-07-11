@@ -3,17 +3,20 @@ import * as stockController from "../controllers/stockController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import adminMiddleware from "../middlewares/adminMiddleware.js";
 import validationMiddleware from "../middlewares/validationMiddleware.js";
-import { adjustStockValidator, assignProductValidator, availableProductsValidator, availableStoresValidator, transferStockValidator } from "../validators/stockvalidator.js";
-
-
-
+import {
+  adjustStockValidator,
+  assignProductValidator,
+  availableProductsValidator,
+  availableStoresValidator,
+  transferStockValidator,
+} from "../validators/stockvalidator.js";
 
 const router = express.Router();
 
 router.get(
   "/getStocks/:storeId",
   authMiddleware,
-  stockController.getStocksByStore
+  stockController.getStocksByStore,
 );
 
 router.get(
@@ -22,7 +25,7 @@ router.get(
   adminMiddleware,
   availableProductsValidator,
   validationMiddleware,
-  stockController.getAvailableProducts
+  stockController.getAvailableProducts,
 );
 
 router.post(
@@ -31,7 +34,7 @@ router.post(
   adminMiddleware,
   assignProductValidator,
   validationMiddleware,
-  stockController.assignProduct
+  stockController.assignProduct,
 );
 
 router.patch(
@@ -40,7 +43,7 @@ router.patch(
   adminMiddleware,
   adjustStockValidator,
   validationMiddleware,
-  stockController.adjustStock
+  stockController.adjustStock,
 );
 
 router.get(
@@ -49,7 +52,7 @@ router.get(
   adminMiddleware,
   availableStoresValidator,
   validationMiddleware,
-  stockController.getAvailableStores
+  stockController.getAvailableStores,
 );
 
 router.patch(
@@ -58,7 +61,7 @@ router.patch(
   adminMiddleware,
   transferStockValidator,
   validationMiddleware,
-  stockController.transferStock
+  stockController.transferStock,
 );
 
 export default router;

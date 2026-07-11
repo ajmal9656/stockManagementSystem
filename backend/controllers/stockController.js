@@ -3,14 +3,11 @@ import * as stockService from "../services/stockService.js";
 export const getStocksByStore = async (req, res, next) => {
   try {
     console.log("fetch stock by store controller");
-    
+
     const result = await stockService.getStocksByStore(
       req.params.storeId,
-      req.query
+      req.query,
     );
-    console.log("fetch stock by store controller resulkt",result);
-    
-
 
     return res.status(200).json({
       success: true,
@@ -21,17 +18,11 @@ export const getStocksByStore = async (req, res, next) => {
   }
 };
 
-
-export const getAvailableProducts = async (
-  req,
-  res,
-  next
-) => {
+export const getAvailableProducts = async (req, res, next) => {
   try {
-    const products =
-      await stockService.getAvailableProducts(
-        req.params.storeId
-      );
+    const products = await stockService.getAvailableProducts(
+      req.params.storeId,
+    );
 
     return res.status(200).json({
       success: true,
@@ -42,16 +33,9 @@ export const getAvailableProducts = async (
   }
 };
 
-
-export const assignProduct = async (
-  req,
-  res,
-  next
-) => {
+export const assignProduct = async (req, res, next) => {
   try {
-    const stock = await stockService.assignProduct(
-      req.body
-    );
+    const stock = await stockService.assignProduct(req.body);
 
     return res.status(201).json({
       success: true,
@@ -63,15 +47,9 @@ export const assignProduct = async (
   }
 };
 
-export const adjustStock = async (
-  req,
-  res,
-  next
-) => {
+export const adjustStock = async (req, res, next) => {
   try {
-    const stock = await stockService.adjustStock(
-      req.body
-    );
+    const stock = await stockService.adjustStock(req.body);
 
     return res.status(200).json({
       success: true,
@@ -83,18 +61,10 @@ export const adjustStock = async (
   }
 };
 
-export const getAvailableStores = async (
-  req,
-  res,
-  next
-) => {
+export const getAvailableStores = async (req, res, next) => {
   try {
-    const stores =
-      await stockService.getAvailableStores(
-        req.params.stockId
-      );
-      console.log("available stores",stores);
-      
+    const stores = await stockService.getAvailableStores(req.params.stockId);
+    console.log("available stores", stores);
 
     return res.status(200).json({
       success: true,
@@ -105,14 +75,9 @@ export const getAvailableStores = async (
   }
 };
 
-export const transferStock = async (
-  req,
-  res,
-  next
-) => {
+export const transferStock = async (req, res, next) => {
   try {
-    const result =
-      await stockService.transferStock(req.body);
+    const result = await stockService.transferStock(req.body);
 
     return res.status(200).json({
       success: true,

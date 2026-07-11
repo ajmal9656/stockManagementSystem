@@ -19,10 +19,7 @@ export const getStores = async (req, res, next) => {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 5;
 
-    const { stores, totalStores } = await storeService.getStores(
-      page,
-      limit,
-    );
+    const { stores, totalStores } = await storeService.getStores(page, limit);
 
     res.status(200).json({
       success: true,
@@ -34,6 +31,3 @@ export const getStores = async (req, res, next) => {
     next(error);
   }
 };
-
-
-

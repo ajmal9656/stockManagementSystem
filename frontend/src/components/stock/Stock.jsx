@@ -10,7 +10,7 @@ import AdjustStockModal from "./AdjustStockModal";
 import TransferStockModal from "./TransferStockModal";
 
 function Stock() {
-  console.log("Stock component rendered");
+
   const { storeId } = useParams();
 
   const { user } = useSelector((state) => state.auth);
@@ -166,8 +166,6 @@ setStocks(response.data.stocks);
       const response = await getAvailableStores(
         stock._id
       );
-      console.log("store res",response);
-      
 
       setAvailableStores(response.data);
 
@@ -177,7 +175,7 @@ setStocks(response.data.stocks);
       });
 
       setShowTransferModal(true);
-      console.log("Opening transfer modal...");
+
     } catch (error) {
       toast.error(
         error.response?.data?.message ||

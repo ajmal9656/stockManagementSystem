@@ -5,8 +5,6 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 import adminMiddleware from "../middlewares/adminMiddleware.js";
 import { storeValidator } from "../validators/storeValidator.js";
 
-
-
 const router = express.Router();
 
 router.post(
@@ -15,13 +13,9 @@ router.post(
   adminMiddleware,
   storeValidator,
   validationMiddleware,
-  storeController.addStore
+  storeController.addStore,
 );
 
-router.get(
-  "/getStores",
-  authMiddleware,
-  storeController.getStores
-);
+router.get("/getStores", authMiddleware, storeController.getStores);
 
 export default router;
