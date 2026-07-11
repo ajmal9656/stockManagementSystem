@@ -16,33 +16,41 @@ function AdjustStockModal({
     reset,
     formState: { errors },
   } = useForm();
+  
+  
+  
 
 
   const onSubmit = async (data) => {
-    try {
-      const response = await adjustStock({
-        stockId: stock._id,
-        quantity: Number(data.quantity),
-      });
+  try {
+    const quantity =
+      data.type === "decrease"
+        ? -Number(data.quantity)
+        : Number(data.quantity);
 
-      toast.success(response.message);
+    const response = await adjustStock({
+      stockId: stock._id,
+      quantity,
+    });
 
-      reset();
-      onClose();
+    toast.success(response.message);
 
-      if (page === 1) {
-        fetchStocks(1);
-      } else {
-        setPage(1);
-      }
-    } catch (error) {
-      toast.error(
-        error.response?.data?.errors?.[0]?.msg ||
-          error.response?.data?.message ||
-          "Something went wrong"
-      );
+    reset();
+    onClose();
+
+    if (page === 1) {
+      fetchStocks(1);
+    } else {
+      setPage(1);
     }
-  };
+  } catch (error) {
+    toast.error(
+      error.response?.data?.errors?.[0]?.msg ||
+      error.response?.data?.message ||
+      "Something went wrong"
+    );
+  }
+};
 
   return (
     <div className="modal">
@@ -79,26 +87,68 @@ function AdjustStockModal({
               disabled
             />
           </div>
+          <div className="form-group">
+  <label>Adjustment Type</label>
+
+  <label>
+    <input
+      type="radio"
+      value="increase"
+      defaultChecked
+      {...register("type")}
+    />
+    Increase
+  </label>
+
+  <label>
+    <input
+      type="radio"
+      value="decrease"
+      {...register("type")}
+    />
+    Decrease
+  </label>
+</div>
 
           <div className="form-group">
-            <label>Add Quantity</label>
+            <label>Quantity</label>
 
             <input
-              type="number"
-              placeholder="Enter quantity"
-              {...register("quantity", {
-                required: "Quantity is required",
-                valueAsNumber: true,
-                min: {
-                  value: 1,
-                  message: "Quantity must be greater than 0",
-                },
-              })}
-            />
+  type="number"
+  placeholder="Enter quantity"
+  step="1"
+  {...register("quantity", {
+    required: "Quantity is required",
+    valueAsNumber: true,
+    min: {
+      value: 1,
+      message: "Quantity must be greater than 0",
+    },
+    validate: {
+      integer: (value) =>
+        Number.isInteger(value) ||
+        "Quantity must be a whole number.",
+      availableStock: (value, formValues) => {
+        if (
+          formValues.type === "decrease" &&
+          value > stock.quantity
+        ) {
+          return `Cannot decrease more than available stock (${stock.quantity}).`;
+        }
 
-            <small className="error-text">
-              {errors.quantity?.message}
-            </small>
+        return true;
+      },
+    },
+  })}
+/>
+
+<small className="error-text">
+  {errors.quantity?.message}
+</small>
+
+<small className="error-text">
+  {errors.quantity?.message}
+</small>
           </div>
 
           <div className="modal-buttons">

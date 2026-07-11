@@ -2,12 +2,12 @@ import dotenv from "dotenv";
 
 dotenv.config();
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoMemoryReplSet } from "mongodb-memory-server";
 
 let mongoServer;
 
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
+  mongoServer = await MongoMemoryReplSet.create();
 
   await mongoose.connect(mongoServer.getUri());
 });

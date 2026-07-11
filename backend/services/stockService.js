@@ -2,6 +2,7 @@ import Stock from "../models/Stock.js";
 import Store from "../models/Store.js";
 import Product from "../models/Product.js";
 import { STATUS } from "../constants/constants.js";
+import mongoose from "mongoose";
 
 
 export const getStocksByStore = async (
@@ -167,24 +168,70 @@ export const adjustStock = async ({
     throw error;
   }
 
-  if (stock.store.status !== "active") {
+  if (stock.store.status !== STATUS.ACTIVE) {
     const error = new Error("Store is inactive.");
     error.statusCode = 400;
     throw error;
   }
 
-  if (stock.product.status !== "active") {
+  if (stock.product.status !== STATUS.ACTIVE) {
     const error = new Error("Product is inactive.");
     error.statusCode = 400;
     throw error;
   }
+  if (
+    quantity < 0 &&
+    Math.abs(quantity) > stock.quantity
+  ) {
+    const error = new Error(
+      "Adjustment quantity cannot be greater than available stock."
+    );
+    error.statusCode = 400;
+    throw error;
+  }
 
+  let updatedStock;
 
-  stock.quantity += quantity;
+  if (quantity >= 0) {
+    updatedStock = await Stock.findByIdAndUpdate(
+      stockId,
+      {
+        $inc: {
+          quantity,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+  } else {
+    updatedStock = await Stock.findOneAndUpdate(
+      {
+        _id: stockId,
+        quantity: {
+          $gte: Math.abs(quantity),
+        },
+      },
+      {
+        $inc: {
+          quantity,
+        },
+      },
+      {
+        new: true,
+      }
+    );
 
-  await stock.save();
+    if (!updatedStock) {
+      const error = new Error(
+        "Insufficient stock for adjustment."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+  }
 
-  return stock;
+  return updatedStock;
 };
 
 
@@ -231,7 +278,150 @@ export const transferStock = async ({
   toStoreId,
   quantity,
 }) => {
-  return;
- 
+  const session =
+    await mongoose.startSession();
+
+  session.startTransaction();
+
+  try {
+    const sourceStock = await Stock.findById(
+      stockId
+    )
+      .populate("store")
+      .populate("product")
+      .session(session);
+
+    if (!sourceStock) {
+      const error = new Error("Stock not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (!sourceStock.store) {
+      const error = new Error("Store not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (!sourceStock.product) {
+      const error = new Error("Product not found.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (
+      sourceStock.store.status !== STATUS.ACTIVE
+    ) {
+      const error = new Error(
+        "Source store is inactive."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (
+      sourceStock.product.status !== STATUS.ACTIVE
+    ) {
+      const error = new Error(
+        "Product is inactive."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (
+      sourceStock.store._id.toString() ===
+      toStoreId
+    ) {
+      const error = new Error(
+        "Cannot transfer to the same store."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const destinationStore =
+      await Store.findById(toStoreId).session(
+        session
+      );
+
+    if (!destinationStore) {
+      const error = new Error(
+        "Destination store not found."
+      );
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (
+      destinationStore.status !== STATUS.ACTIVE
+    ) {
+      const error = new Error(
+        "Destination store is inactive."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const updatedSource =
+      await Stock.findOneAndUpdate(
+        {
+          _id: stockId,
+          quantity: { $gte: quantity },
+        },
+        {
+          $inc: {
+            quantity: -quantity,
+          },
+        },
+        {
+          new: true,
+          session,
+        }
+      );
+
+    if (!updatedSource) {
+      const error = new Error(
+        "Insufficient stock available."
+      );
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const destinationStock =
+      await Stock.findOne({
+        store: toStoreId,
+        product: sourceStock.product._id,
+      }).session(session);
+
+    if (destinationStock) {
+      destinationStock.quantity += quantity;
+
+      await destinationStock.save({
+        session,
+      });
+    } else {
+      await Stock.create(
+        [
+          {
+            store: toStoreId,
+            product:
+              sourceStock.product._id,
+            quantity,
+          },
+        ],
+        { session }
+      );
+    }
+
+    await session.commitTransaction();
+
+    return updatedSource;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 };
 

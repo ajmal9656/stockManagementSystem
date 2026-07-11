@@ -74,9 +74,11 @@ function Store() {
       <div className="store-header">
         <h2>Stores</h2>
 
-        <button onClick={() => setShowModal(true)}>
-          Add Store
-        </button>
+        {user?.role === "admin" && (
+  <button onClick={() => setShowModal(true)}>
+    Add Store
+  </button>
+)}
       </div>
 
       <table className="store-table">
@@ -104,7 +106,9 @@ function Store() {
       navigate(`/store/stocks/${store._id}`)}
     }
   >
-    Stocks
+    {user?.role === "admin"
+    ? "Manage Stocks"
+    : "View Stocks"}
   </button>
 </td>
               </tr>

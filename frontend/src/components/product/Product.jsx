@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+
 
 import "../../styles/product/Product.css";
 import {
@@ -13,6 +15,8 @@ function Product() {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const { user } = useSelector((state) => state.auth);
 
   const {
     register,
@@ -67,9 +71,11 @@ function Product() {
       <div className="product-header">
         <h2>Products</h2>
 
-        <button onClick={() => setShowModal(true)}>
-          Add Product
-        </button>
+        {user?.role === "admin" && (
+  <button onClick={() => setShowModal(true)}>
+    Add Product
+  </button>
+)}
       </div>
 
       <table className="product-table">

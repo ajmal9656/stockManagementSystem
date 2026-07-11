@@ -30,8 +30,14 @@ export const adjustStockValidator = [
     .withMessage("Invalid stock."),
 
   body("quantity")
-    .isInt({ min: 1 })
-    .withMessage("Quantity must be greater than 0."),
+    .isInt()
+    .withMessage("Quantity must be an integer.")
+    .custom((value) => {
+      if (value === 0) {
+        throw new Error("Quantity cannot be 0.");
+      }
+      return true;
+    }),
 ];
 
 
