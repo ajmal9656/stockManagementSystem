@@ -18,7 +18,7 @@ function AssignProductModal({
     reset,
     formState: { errors },
   } = useForm();
-  console.log("assign modal rendered");
+
   
 
 

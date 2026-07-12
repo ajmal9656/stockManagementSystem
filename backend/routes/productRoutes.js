@@ -5,8 +5,6 @@ import authMiddleware from "../middlewares/authMiddleware.js";
 import adminMiddleware from "../middlewares/adminMiddleware.js";
 import { productValidator } from "../validators/productValidator.js";
 
-
-
 const router = express.Router();
 
 router.post(
@@ -15,13 +13,9 @@ router.post(
   adminMiddleware,
   productValidator,
   validationMiddleware,
-  productController.addProduct
+  productController.addProduct,
 );
 
-router.get(
-  "/getProducts",
-  authMiddleware,
-  productController.getProducts
-);
+router.get("/getProducts", authMiddleware, productController.getProducts);
 
 export default router;

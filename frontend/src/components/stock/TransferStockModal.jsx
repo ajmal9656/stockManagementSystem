@@ -19,10 +19,10 @@ function TransferStockModal({
     formState: { errors },
   } = useForm();
 
-console.log("Transfer modal rendered");
+
   const onSubmit = async (data) => {
     try {
-      console.log("submit");
+
       
       const response = await transferStock({
         stockId: stock._id,

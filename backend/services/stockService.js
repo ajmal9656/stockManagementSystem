@@ -4,20 +4,15 @@ import Product from "../models/Product.js";
 import { STATUS } from "../constants/constants.js";
 import mongoose from "mongoose";
 
+export const getStocksByStore = async (storeId, query) => {
+  const store = await Store.findById(storeId);
+  console.log("store", store);
 
-export const getStocksByStore = async (
-  storeId,
-  query
-) => {
-    const store = await Store.findById(storeId);
-    console.log("store",store);
-    
-
-if (!store) {
-  const error = new Error("Store not found.");
-  error.statusCode = 404;
-  throw error;
-}
+  if (!store) {
+    const error = new Error("Store not found.");
+    error.statusCode = 404;
+    throw error;
+  }
 
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 5;
@@ -28,40 +23,31 @@ if (!store) {
   };
 
   if (query.threshold) {
-  filter.quantity = {
-    $lte: Number(query.threshold),
-  };
-}
+    filter.quantity = {
+      $lte: Number(query.threshold),
+    };
+  }
 
   const totalStocks = await Stock.countDocuments(filter);
-  console.log("totalStocks",totalStocks);
-  console.log("filter",filter);
-  
-  
 
   const stocks = await Stock.find(filter)
     .populate("product", "name sku")
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
-    console.log("stocks",stocks);
-    
+  console.log("stocks", stocks);
 
   return {
     data: {
-        storeName: store.name,
-        stocks
+      storeName: store.name,
+      stocks,
     },
     page,
     totalPages: Math.ceil(totalStocks / limit),
   };
 };
 
-
-
-export const getAvailableProducts = async (
-  storeId
-) => {
+export const getAvailableProducts = async (storeId) => {
   const store = await Store.findById(storeId);
 
   if (!store) {
@@ -70,18 +56,16 @@ export const getAvailableProducts = async (
     throw error;
   }
   if (store.status !== STATUS.ACTIVE) {
-  const error = new Error("Store is inactive.");
-  error.statusCode = 400;
-  throw error;
-}
+    const error = new Error("Store is inactive.");
+    error.statusCode = 400;
+    throw error;
+  }
 
   const stockedProducts = await Stock.find({
     store: storeId,
   }).select("product");
 
-  const productIds = stockedProducts.map(
-    (stock) => stock.product
-  );
+  const productIds = stockedProducts.map((stock) => stock.product);
 
   const products = await Product.find({
     _id: {
@@ -95,12 +79,7 @@ export const getAvailableProducts = async (
   return products;
 };
 
-
-export const assignProduct = async ({
-  storeId,
-  productId,
-  quantity,
-}) => {
+export const assignProduct = async ({ storeId, productId, quantity }) => {
   const store = await Store.findById(storeId);
 
   if (!store) {
@@ -108,12 +87,12 @@ export const assignProduct = async ({
     error.statusCode = 404;
     throw error;
   }
- 
-if (store.status !== STATUS.ACTIVE) {
-  const error = new Error("Store is inactive.");
-  error.statusCode = 400;
-  throw error;
-}
+
+  if (store.status !== STATUS.ACTIVE) {
+    const error = new Error("Store is inactive.");
+    error.statusCode = 400;
+    throw error;
+  }
 
   const product = await Product.findById(productId);
 
@@ -122,13 +101,12 @@ if (store.status !== STATUS.ACTIVE) {
     error.statusCode = 404;
     throw error;
   }
- 
-if (product.status !== STATUS.ACTIVE) {
-  const error = new Error("Product is inactive.");
-  error.statusCode = 400;
-  throw error;
-}
-  
+
+  if (product.status !== STATUS.ACTIVE) {
+    const error = new Error("Product is inactive.");
+    error.statusCode = 400;
+    throw error;
+  }
 
   const existingStock = await Stock.findOne({
     store: storeId,
@@ -136,9 +114,7 @@ if (product.status !== STATUS.ACTIVE) {
   });
 
   if (existingStock) {
-    const error = new Error(
-      "Product already assigned to this store."
-    );
+    const error = new Error("Product already assigned to this store.");
     error.statusCode = 409;
     throw error;
   }
@@ -152,12 +128,7 @@ if (product.status !== STATUS.ACTIVE) {
   return stock;
 };
 
-
-
-export const adjustStock = async ({
-  stockId,
-  quantity,
-}) => {
+export const adjustStock = async ({ stockId, quantity }) => {
   const stock = await Stock.findById(stockId)
     .populate("store")
     .populate("product");
@@ -179,12 +150,9 @@ export const adjustStock = async ({
     error.statusCode = 400;
     throw error;
   }
-  if (
-    quantity < 0 &&
-    Math.abs(quantity) > stock.quantity
-  ) {
+  if (quantity < 0 && Math.abs(quantity) > stock.quantity) {
     const error = new Error(
-      "Adjustment quantity cannot be greater than available stock."
+      "Adjustment quantity cannot be greater than available stock.",
     );
     error.statusCode = 400;
     throw error;
@@ -202,7 +170,7 @@ export const adjustStock = async ({
       },
       {
         new: true,
-      }
+      },
     );
   } else {
     updatedStock = await Stock.findOneAndUpdate(
@@ -219,13 +187,11 @@ export const adjustStock = async ({
       },
       {
         new: true,
-      }
+      },
     );
 
     if (!updatedStock) {
-      const error = new Error(
-        "Insufficient stock for adjustment."
-      );
+      const error = new Error("Insufficient stock for adjustment.");
       error.statusCode = 400;
       throw error;
     }
@@ -234,11 +200,7 @@ export const adjustStock = async ({
   return updatedStock;
 };
 
-
-
-export const getAvailableStores = async (
-  stockId
-) => {
+export const getAvailableStores = async (stockId) => {
   const stock = await Stock.findById(stockId)
     .populate("store")
     .populate("product");
@@ -271,22 +233,13 @@ export const getAvailableStores = async (
   return stores;
 };
 
-
-
-export const transferStock = async ({
-  stockId,
-  toStoreId,
-  quantity,
-}) => {
-  const session =
-    await mongoose.startSession();
+export const transferStock = async ({ stockId, toStoreId, quantity }) => {
+  const session = await mongoose.startSession();
 
   session.startTransaction();
 
   try {
-    const sourceStock = await Stock.findById(
-      stockId
-    )
+    const sourceStock = await Stock.findById(stockId)
       .populate("store")
       .populate("product")
       .session(session);
@@ -309,90 +262,64 @@ export const transferStock = async ({
       throw error;
     }
 
-    if (
-      sourceStock.store.status !== STATUS.ACTIVE
-    ) {
-      const error = new Error(
-        "Source store is inactive."
-      );
+    if (sourceStock.store.status !== STATUS.ACTIVE) {
+      const error = new Error("Source store is inactive.");
       error.statusCode = 400;
       throw error;
     }
 
-    if (
-      sourceStock.product.status !== STATUS.ACTIVE
-    ) {
-      const error = new Error(
-        "Product is inactive."
-      );
+    if (sourceStock.product.status !== STATUS.ACTIVE) {
+      const error = new Error("Product is inactive.");
       error.statusCode = 400;
       throw error;
     }
 
-    if (
-      sourceStock.store._id.toString() ===
-      toStoreId
-    ) {
-      const error = new Error(
-        "Cannot transfer to the same store."
-      );
+    if (sourceStock.store._id.toString() === toStoreId) {
+      const error = new Error("Cannot transfer to the same store.");
       error.statusCode = 400;
       throw error;
     }
 
-    const destinationStore =
-      await Store.findById(toStoreId).session(
-        session
-      );
+    const destinationStore = await Store.findById(toStoreId).session(session);
 
     if (!destinationStore) {
-      const error = new Error(
-        "Destination store not found."
-      );
+      const error = new Error("Destination store not found.");
       error.statusCode = 404;
       throw error;
     }
 
-    if (
-      destinationStore.status !== STATUS.ACTIVE
-    ) {
-      const error = new Error(
-        "Destination store is inactive."
-      );
+    if (destinationStore.status !== STATUS.ACTIVE) {
+      const error = new Error("Destination store is inactive.");
       error.statusCode = 400;
       throw error;
     }
 
-    const updatedSource =
-      await Stock.findOneAndUpdate(
-        {
-          _id: stockId,
-          quantity: { $gte: quantity },
+    const updatedSource = await Stock.findOneAndUpdate(
+      {
+        _id: stockId,
+        quantity: { $gte: quantity },
+      },
+      {
+        $inc: {
+          quantity: -quantity,
         },
-        {
-          $inc: {
-            quantity: -quantity,
-          },
-        },
-        {
-          new: true,
-          session,
-        }
-      );
+      },
+      {
+        new: true,
+        session,
+      },
+    );
 
     if (!updatedSource) {
-      const error = new Error(
-        "Insufficient stock available."
-      );
+      const error = new Error("Insufficient stock available.");
       error.statusCode = 400;
       throw error;
     }
 
-    const destinationStock =
-      await Stock.findOne({
-        store: toStoreId,
-        product: sourceStock.product._id,
-      }).session(session);
+    const destinationStock = await Stock.findOne({
+      store: toStoreId,
+      product: sourceStock.product._id,
+    }).session(session);
 
     if (destinationStock) {
       destinationStock.quantity += quantity;
@@ -405,12 +332,11 @@ export const transferStock = async ({
         [
           {
             store: toStoreId,
-            product:
-              sourceStock.product._id,
+            product: sourceStock.product._id,
             quantity,
           },
         ],
-        { session }
+        { session },
       );
     }
 
@@ -424,4 +350,3 @@ export const transferStock = async ({
     session.endSession();
   }
 };
-

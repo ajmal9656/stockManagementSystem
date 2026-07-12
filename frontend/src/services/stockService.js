@@ -51,7 +51,7 @@ export const adjustStock = async (data) => {
 export const getAvailableStores = async (
   stockId
 ) => {
-  console.log("enter");
+
   
   const response = await axios.get(
     `/stock/availableStores/${stockId}`

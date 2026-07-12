@@ -1,0 +1,939 @@
+openapi: 3.0.3
+
+info:
+  title: Stock Management System API
+  version: 1.0.0
+  description: REST API for Stock Management System.
+
+servers:
+  - url: http://localhost:5000/api
+
+tags:
+  - name: Authentication
+    description: User Authentication APIs
+
+  - name: Product
+    description: Product Management APIs
+
+  - name: Store
+    description: Store Management APIs
+
+  - name: Stock
+    description: Stock Management APIs
+
+components:
+
+  securitySchemes:
+
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+
+  schemas:
+
+    User:
+      type: object
+
+      properties:
+
+        id:
+          type: string
+          example: "686fbe81c5b1e26d23f9f312"
+
+        name:
+          type: string
+          example: Admin
+
+        email:
+          type: string
+          example: admin@gmail.com
+
+        role:
+          type: string
+          enum:
+            - admin
+            - shopper
+
+    Product:
+      type: object
+
+      properties:
+
+        _id:
+          type: string
+
+        name:
+          type: string
+
+        sku:
+          type: string
+
+        description:
+          type: string
+
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+
+    Store:
+      type: object
+
+      properties:
+
+        _id:
+          type: string
+
+        name:
+          type: string
+
+        description:
+          type: string
+
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+
+    Stock:
+      type: object
+
+      properties:
+
+        _id:
+          type: string
+
+        store:
+          type: string
+
+        product:
+          type: string
+
+        quantity:
+          type: integer
+
+paths:
+
+  /auth/register:
+
+    post:
+
+      tags:
+        - Authentication
+
+      summary: Register User
+
+      description: Register a new user.
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              required:
+                - name
+                - email
+                - password
+
+              properties:
+
+                name:
+                  type: string
+                  example: Admin
+
+                email:
+                  type: string
+                  example: admin@gmail.com
+
+                password:
+                  type: string
+                  example: "12345678"
+
+      responses:
+
+        "201":
+
+          description: User registered successfully.
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: object
+
+                properties:
+
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+                    type: string
+                    example: User registered successfully.
+
+                  data:
+                    $ref: '#/components/schemas/User'
+
+        "400":
+          description: Validation failed.
+
+        "409":
+          description: Email already exists.
+
+
+
+  /auth/login:
+
+    post:
+
+      tags:
+        - Authentication
+
+      summary: Login User
+
+      description: Authenticate user and store JWT in an HTTP-only cookie.
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              required:
+                - email
+                - password
+
+              properties:
+
+                email:
+                  type: string
+                  example: admin@gmail.com
+
+                password:
+                  type: string
+                  example: "12345678"
+
+      responses:
+
+        "200":
+
+          description: Login successful.
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: object
+
+                properties:
+
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+                    type: string
+                    example: Login successful.
+
+                  data:
+                    $ref: '#/components/schemas/User'
+
+        "400":
+          description: Validation failed.
+
+        "401":
+          description: Invalid credentials.
+
+
+
+  /auth/logout:
+
+    post:
+
+      tags:
+        - Authentication
+
+      summary: Logout User
+
+      description: Logout the currently authenticated user by clearing the authentication cookie.
+
+      security:
+        - cookieAuth: []
+
+      responses:
+
+        "200":
+
+          description: Logged out successfully.
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: object
+
+                properties:
+
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+                    type: string
+                    example: Logged out successfully.
+
+        "401":
+          description: Unauthorized.
+  Product:
+    description: Product Management APIs
+
+  /product/addProduct:
+
+    post:
+
+      tags:
+        - Product
+
+      summary: Add Product
+
+      description: Create a new product. Accessible only to administrators.
+
+      security:
+        - cookieAuth: []
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              required:
+                - name
+                - description
+
+              properties:
+
+                name:
+                  type: string
+                  example: Laptop
+
+                description:
+                  type: string
+                  example: Dell Latitude 5540
+
+      responses:
+
+        "201":
+
+          description: Product added successfully.
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: object
+
+                properties:
+
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+                    type: string
+                    example: Product added successfully.
+
+                  data:
+                    $ref: '#/components/schemas/Product'
+
+        "400":
+          description: Validation failed.
+
+        "401":
+          description: Unauthorized.
+
+        "403":
+          description: Forbidden. Admin access required.
+
+        "409":
+          description: Product already exists.
+
+
+
+  /product/getProducts:
+
+    get:
+
+      tags:
+        - Product
+
+      summary: Get Products
+
+      description: Retrieve all products with pagination.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+
+        - in: query
+
+          name: page
+
+          schema:
+            type: integer
+            default: 1
+
+          description: Page number.
+
+        - in: query
+
+          name: limit
+
+          schema:
+            type: integer
+            default: 5
+
+          description: Number of products per page.
+
+      responses:
+
+        "200":
+
+          description: Products fetched successfully.
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: object
+
+                properties:
+
+                  success:
+                    type: boolean
+                    example: true
+
+                  data:
+
+                    type: array
+
+                    items:
+                      $ref: '#/components/schemas/Product'
+
+                  page:
+                    type: integer
+                    example: 1
+
+                  totalPages:
+                    type: integer
+                    example: 2
+
+        "401":
+          description: Unauthorized.
+  /store/addStore:
+
+    post:
+
+      tags:
+        - Store
+
+      summary: Add Store
+
+      description: Create a new store. Accessible only to administrators.
+
+      security:
+        - cookieAuth: []
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              required:
+                - name
+                - description
+
+              properties:
+
+                name:
+                  type: string
+                  example: Kochi Store
+
+                description:
+                  type: string
+                  example: Main branch in Kochi
+
+      responses:
+
+        "201":
+
+          description: Store added successfully.
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: object
+
+                properties:
+
+                  success:
+                    type: boolean
+                    example: true
+
+                  message:
+                    type: string
+                    example: Store added successfully.
+
+                  data:
+                    $ref: '#/components/schemas/Store'
+
+        "400":
+          description: Validation failed.
+
+        "401":
+          description: Unauthorized.
+
+        "403":
+          description: Forbidden. Admin access required.
+
+        "409":
+          description: Store already exists.
+
+
+
+  /store/getStores:
+
+    get:
+
+      tags:
+        - Store
+
+      summary: Get Stores
+
+      description: Retrieve all stores with pagination.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+
+        - in: query
+
+          name: page
+
+          schema:
+            type: integer
+            default: 1
+
+          description: Page number.
+
+        - in: query
+
+          name: limit
+
+          schema:
+            type: integer
+            default: 5
+
+          description: Number of stores per page.
+
+      responses:
+
+        "200":
+
+          description: Stores fetched successfully.
+
+          content:
+
+            application/json:
+
+              schema:
+
+                type: object
+
+                properties:
+
+                  success:
+                    type: boolean
+                    example: true
+
+                  data:
+
+                    type: array
+
+                    items:
+                      $ref: '#/components/schemas/Store'
+
+                  page:
+                    type: integer
+                    example: 1
+
+                  totalPages:
+                    type: integer
+                    example: 2
+
+        "401":
+          description: Unauthorized.
+  /stock/getStocks/{storeId}:
+
+    get:
+
+      tags:
+        - Stock
+
+      summary: Get Stocks By Store
+
+      description: Returns paginated stocks for a specific store. Supports optional low-stock filtering using the threshold query parameter.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+
+        - in: path
+          name: storeId
+          required: true
+          schema:
+            type: string
+
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 5
+
+        - in: query
+          name: threshold
+          schema:
+            type: integer
+          description: Returns products having quantity less than or equal to the threshold.
+
+      responses:
+
+        "200":
+          description: Stocks fetched successfully.
+
+        "401":
+          description: Unauthorized.
+
+        "404":
+          description: Store not found.
+
+
+
+  /stock/availableProducts/{storeId}:
+
+    get:
+
+      tags:
+        - Stock
+
+      summary: Get Available Products
+
+      description: Returns active products that are not already assigned to the specified store.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+
+        - in: path
+          name: storeId
+          required: true
+          schema:
+            type: string
+
+      responses:
+
+        "200":
+          description: Available products fetched successfully.
+
+        "400":
+          description: Store is inactive.
+
+        "401":
+          description: Unauthorized.
+
+        "403":
+          description: Forbidden. Admin access required.
+
+        "404":
+          description: Store not found.
+
+
+
+  /stock/assignProduct:
+
+    post:
+
+      tags:
+        - Stock
+
+      summary: Assign Product To Store
+
+      description: Assign an active product to an active store with an initial quantity.
+
+      security:
+        - cookieAuth: []
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              required:
+                - storeId
+                - productId
+                - quantity
+
+              properties:
+
+                storeId:
+                  type: string
+
+                productId:
+                  type: string
+
+                quantity:
+                  type: integer
+                  minimum: 1
+                  example: 20
+
+      responses:
+
+        "201":
+          description: Product assigned successfully.
+
+        "400":
+          description: Validation failed or inactive product/store.
+
+        "401":
+          description: Unauthorized.
+
+        "403":
+          description: Forbidden. Admin access required.
+
+        "404":
+          description: Product or Store not found.
+
+        "409":
+          description: Product already assigned to the store.
+
+
+
+  /stock/adjustStock:
+
+    patch:
+
+      tags:
+        - Stock
+
+      summary: Adjust Stock Quantity
+
+      description: Increase or decrease stock quantity.
+
+      security:
+        - cookieAuth: []
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              required:
+                - stockId
+                - quantity
+
+              properties:
+
+                stockId:
+                  type: string
+
+                quantity:
+                  type: integer
+                  example: -5
+                  description: Positive value increases stock, negative value decreases stock.
+
+      responses:
+
+        "200":
+          description: Stock updated successfully.
+
+        "400":
+          description: Invalid adjustment quantity or insufficient stock.
+
+        "401":
+          description: Unauthorized.
+
+        "403":
+          description: Forbidden. Admin access required.
+
+        "404":
+          description: Stock, Product or Store not found.
+
+
+
+  /stock/availableStores/{stockId}:
+
+    get:
+
+      tags:
+        - Stock
+
+      summary: Get Available Destination Stores
+
+      description: Returns all active stores except the source store.
+
+      security:
+        - cookieAuth: []
+
+      parameters:
+
+        - in: path
+          name: stockId
+          required: true
+          schema:
+            type: string
+
+      responses:
+
+        "200":
+          description: Available stores fetched successfully.
+
+        "400":
+          description: Store or Product is inactive.
+
+        "401":
+          description: Unauthorized.
+
+        "403":
+          description: Forbidden. Admin access required.
+
+        "404":
+          description: Stock not found.
+
+
+
+  /stock/transferStock:
+
+    patch:
+
+      tags:
+        - Stock
+
+      summary: Transfer Stock
+
+      description: Transfer stock from one store to another using a MongoDB transaction.
+
+      security:
+        - cookieAuth: []
+
+      requestBody:
+
+        required: true
+
+        content:
+
+          application/json:
+
+            schema:
+
+              type: object
+
+              required:
+                - stockId
+                - toStoreId
+                - quantity
+
+              properties:
+
+                stockId:
+                  type: string
+
+                toStoreId:
+                  type: string
+
+                quantity:
+                  type: integer
+                  minimum: 1
+                  example: 10
+
+      responses:
+
+        "200":
+          description: Stock transferred successfully.
+
+        "400":
+          description: Invalid transfer request, inactive store/product, same destination store or insufficient stock.
+
+        "401":
+          description: Unauthorized.
+
+        "403":
+          description: Forbidden. Admin access required.
+
+        "404":
+          description: Stock, Product or Store not found.
