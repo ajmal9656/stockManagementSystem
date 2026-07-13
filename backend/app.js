@@ -42,14 +42,6 @@ app.use("/api/product", productRoutes);
 app.use("/api/store", storeRoutes);
 app.use("/api/stock", stockRoutes);
 
-
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Stock Management API Running",
-  });
-});
-
 app.use(errorMiddleware);
 
 export default app;
