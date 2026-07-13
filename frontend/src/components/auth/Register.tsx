@@ -33,10 +33,10 @@ function Register() {
       console.log("err", error.response);
 
       toast.error(
-  error.response?.data?.errors?.[0]?.msg ||
-  error.response?.data?.message ||
-  "Something went wrong"
-);
+        error.response?.data?.errors?.[0]?.msg ||
+          error.response?.data?.message ||
+          "Something went wrong",
+      );
     }
   };
 

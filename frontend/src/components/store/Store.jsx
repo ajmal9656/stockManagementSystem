@@ -3,14 +3,9 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import "../../styles/store/Store.css";
-import {
-  addStore,
-  getStores,
-} from "../../services/storeService";
+import { addStore, getStores } from "../../services/storeService";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
-
 
 function Store() {
   const [showModal, setShowModal] = useState(false);
@@ -35,10 +30,7 @@ function Store() {
       setStores(response.data);
       setTotalPages(response.totalPages);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to fetch stores"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch stores");
     }
   };
 
@@ -64,7 +56,7 @@ function Store() {
       toast.error(
         error.response?.data?.errors?.[0]?.msg ||
           error.response?.data?.message ||
-          "Something went wrong"
+          "Something went wrong",
       );
     }
   };
@@ -75,10 +67,8 @@ function Store() {
         <h2>Stores</h2>
 
         {user?.role === "admin" && (
-  <button onClick={() => setShowModal(true)}>
-    Add Store
-  </button>
-)}
+          <button onClick={() => setShowModal(true)}>Add Store</button>
+        )}
       </div>
 
       <table className="store-table">
@@ -99,17 +89,14 @@ function Store() {
                 <td>{store.description}</td>
                 <td>{store.status}</td>
                 <td>
-  <button
-    onClick={() =>{
-
-      navigate(`/store/stocks/${store._id}`)}
-    }
-  >
-    {user?.role === "admin"
-    ? "Manage Stocks"
-    : "View Stocks"}
-  </button>
-</td>
+                  <button
+                    onClick={() => {
+                      navigate(`/store/stocks/${store._id}`);
+                    }}
+                  >
+                    {user?.role === "admin" ? "Manage Stocks" : "View Stocks"}
+                  </button>
+                </td>
               </tr>
             ))
           ) : (
@@ -157,9 +144,7 @@ function Store() {
                   })}
                 />
 
-                <small className="error-text">
-                  {errors.name?.message}
-                </small>
+                <small className="error-text">{errors.name?.message}</small>
               </div>
 
               <div className="form-group">
@@ -183,9 +168,7 @@ function Store() {
               </div>
 
               <div className="modal-buttons">
-                <button type="submit">
-                  Save
-                </button>
+                <button type="submit">Save</button>
 
                 <button
                   type="button"

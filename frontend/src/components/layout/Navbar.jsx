@@ -6,7 +6,6 @@ import "../../styles/layout/Navbar.css";
 import { logout } from "../../services/authService";
 import { logoutUser } from "../../redux/slice/authSlice";
 
-
 function Navbar() {
   const { user } = useSelector((state) => state.auth);
 
@@ -23,10 +22,7 @@ function Navbar() {
 
       navigate("/login", { replace: true });
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Logout failed"
-      );
+      toast.error(error.response?.data?.message || "Logout failed");
     }
   };
 
@@ -34,21 +30,12 @@ function Navbar() {
     <div className="navbar">
       <h3>Stock Management System</h3>
 
-
-        
-
-<div>
-  <span>
+      <div>
+        <span>
           {user?.name} ({user?.role})
         </span>
-        <button  onClick={handleLogout}>
-          Logout
-        </button>
-        </div>
-
-
-        
-      
+        <button onClick={handleLogout}>Logout</button>
+      </div>
     </div>
   );
 }

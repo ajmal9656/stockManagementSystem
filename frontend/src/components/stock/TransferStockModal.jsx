@@ -19,11 +19,8 @@ function TransferStockModal({
     formState: { errors },
   } = useForm();
 
-
   const onSubmit = async (data) => {
     try {
-
-      
       const response = await transferStock({
         stockId: stock._id,
         toStoreId: data.toStoreId,
@@ -44,7 +41,7 @@ function TransferStockModal({
       toast.error(
         error.response?.data?.errors?.[0]?.msg ||
           error.response?.data?.message ||
-          "Something went wrong"
+          "Something went wrong",
       );
     }
   };
@@ -52,19 +49,13 @@ function TransferStockModal({
   return (
     <div className="modal">
       <div className="modal-content">
-
         <h3>Transfer Stock</h3>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-
           <div className="form-group">
             <label>From Store</label>
 
-            <input
-              type="text"
-              value={stock.storeName}
-              disabled
-            />
+            <input type="text" value={stock.storeName} disabled />
           </div>
 
           <div className="form-group">
@@ -80,11 +71,7 @@ function TransferStockModal({
           <div className="form-group">
             <label>Available Quantity</label>
 
-            <input
-              type="number"
-              value={stock.quantity}
-              disabled
-            />
+            <input type="number" value={stock.quantity} disabled />
           </div>
 
           <div className="form-group">
@@ -96,23 +83,16 @@ function TransferStockModal({
                 required: "Destination store is required",
               })}
             >
-              <option value="">
-                Select Store
-              </option>
+              <option value="">Select Store</option>
 
               {stores.map((store) => (
-                <option
-                  key={store._id}
-                  value={store._id}
-                >
+                <option key={store._id} value={store._id}>
                   {store.name}
                 </option>
               ))}
             </select>
 
-            <small className="error-text">
-              {errors.toStoreId?.message}
-            </small>
+            <small className="error-text">{errors.toStoreId?.message}</small>
           </div>
 
           <div className="form-group">
@@ -129,21 +109,15 @@ function TransferStockModal({
                   message: "Quantity must be greater than 0",
                 },
                 validate: (value) =>
-                  value <= stock.quantity ||
-                  "Quantity exceeds available stock",
+                  value <= stock.quantity || "Quantity exceeds available stock",
               })}
             />
 
-            <small className="error-text">
-              {errors.quantity?.message}
-            </small>
+            <small className="error-text">{errors.quantity?.message}</small>
           </div>
 
           <div className="modal-buttons">
-
-            <button type="submit">
-              Transfer
-            </button>
+            <button type="submit">Transfer</button>
 
             <button
               type="button"
@@ -154,11 +128,8 @@ function TransferStockModal({
             >
               Cancel
             </button>
-
           </div>
-
         </form>
-
       </div>
     </div>
   );

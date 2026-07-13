@@ -3,12 +3,8 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 
-
 import "../../styles/product/Product.css";
-import {
-  addProduct,
-  getProducts,
-} from "../../services/productService";
+import { addProduct, getProducts } from "../../services/productService";
 
 function Product() {
   const [showModal, setShowModal] = useState(false);
@@ -32,10 +28,7 @@ function Product() {
       setProducts(response.data);
       setTotalPages(response.totalPages);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to fetch products"
-      );
+      toast.error(error.response?.data?.message || "Failed to fetch products");
     }
   };
 
@@ -61,7 +54,7 @@ function Product() {
       toast.error(
         error.response?.data?.errors?.[0]?.msg ||
           error.response?.data?.message ||
-          "Something went wrong"
+          "Something went wrong",
       );
     }
   };
@@ -72,10 +65,8 @@ function Product() {
         <h2>Products</h2>
 
         {user?.role === "admin" && (
-  <button onClick={() => setShowModal(true)}>
-    Add Product
-  </button>
-)}
+          <button onClick={() => setShowModal(true)}>Add Product</button>
+        )}
       </div>
 
       <table className="product-table">
@@ -143,9 +134,7 @@ function Product() {
                   })}
                 />
 
-                <small className="error-text">
-                  {errors.name?.message}
-                </small>
+                <small className="error-text">{errors.name?.message}</small>
               </div>
 
               <div className="form-group">
@@ -169,9 +158,7 @@ function Product() {
               </div>
 
               <div className="modal-buttons">
-                <button type="submit">
-                  Save
-                </button>
+                <button type="submit">Save</button>
 
                 <button
                   type="button"
