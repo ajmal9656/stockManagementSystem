@@ -4,17 +4,11 @@ import "../../styles/layout/Sidebar.css";
 function Sidebar() {
   return (
     <div className="sidebar">
-
       <h2>Stock App</h2>
 
-      <NavLink to="/products">
-        Products
-      </NavLink>
+      <NavLink to="/products">Products</NavLink>
 
-      <NavLink to="/stores">
-        Stores & Stocks
-      </NavLink>
-
+      <NavLink to="/stores">Stores & Stocks</NavLink>
     </div>
   );
 }

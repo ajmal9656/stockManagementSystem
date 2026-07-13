@@ -19,9 +19,6 @@ function AssignProductModal({
     formState: { errors },
   } = useForm();
 
-  
-
-
   const onSubmit = async (data) => {
     try {
       const response = await assignProduct({
@@ -43,7 +40,7 @@ function AssignProductModal({
       toast.error(
         error.response?.data?.errors?.[0]?.msg ||
           error.response?.data?.message ||
-          "Something went wrong"
+          "Something went wrong",
       );
     }
   };
@@ -57,49 +54,35 @@ function AssignProductModal({
           <div className="form-group">
             <label>Store</label>
 
-            <input
-              type="text"
-              value={storeName}
-              disabled
-            />
+            <input type="text" value={storeName} disabled />
           </div>
 
           <div className="form-group">
             <label>Product</label>
-            {
-                products.length > 0 ? (
-                    <>
-                    <select
-              defaultValue=""
-              {...register("productId", {
-                required: "Product is required",
-              })}
-            >
-              <option value="">
-                Select Product
-              </option>
-
-              {products.map((product) => (
-                <option
-                  key={product._id}
-                  value={product._id}
+            {products.length > 0 ? (
+              <>
+                <select
+                  defaultValue=""
+                  {...register("productId", {
+                    required: "Product is required",
+                  })}
                 >
-                  {product.name} ({product.sku})
-                </option>
-              ))}
-            </select>
+                  <option value="">Select Product</option>
 
-            <small className="error-text">
-              {errors.productId?.message}
-            </small></>
+                  {products.map((product) => (
+                    <option key={product._id} value={product._id}>
+                      {product.name} ({product.sku})
+                    </option>
+                  ))}
+                </select>
 
-                    
-                ): <p>
-      No available products to assign.
-    </p>
-            }
-
-            
+                <small className="error-text">
+                  {errors.productId?.message}
+                </small>
+              </>
+            ) : (
+              <p>No available products to assign.</p>
+            )}
           </div>
 
           <div className="form-group">
@@ -119,14 +102,11 @@ function AssignProductModal({
               })}
             />
 
-            <small className="error-text">
-              {errors.quantity?.message}
-            </small>
+            <small className="error-text">{errors.quantity?.message}</small>
           </div>
 
           <div className="modal-buttons">
-            <button type="submit"
-            disabled={products.length === 0}>
+            <button type="submit" disabled={products.length === 0}>
               Save
             </button>
 
