@@ -1,3 +1,4 @@
+import { STATUS } from "../constants/constants.js";
 import Store from "../models/Store.js";
 
 export const addStore = async ({ name, description }) => {
@@ -19,15 +20,19 @@ export const addStore = async ({ name, description }) => {
   return store;
 };
 
-export const getStores = async (page, limit) => {
+export const getStores = async (page, limit, status) => {
   const skip = (page - 1) * limit;
+  const filter = {};
+  if (status === STATUS.ACTIVE) {
+    filter.status = status;
+  }
 
-  const stores = await Store.find()
+  const stores = await Store.find(filter)
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
 
-  const totalStores = await Store.countDocuments();
+  const totalStores = await Store.countDocuments(filter);
 
   return {
     stores,

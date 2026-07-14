@@ -1,3 +1,4 @@
+import { STATUS, USER_ROLES } from "../constants/constants.js";
 import * as storeService from "../services/storeService.js";
 
 export const addStore = async (req, res, next) => {
@@ -18,8 +19,10 @@ export const getStores = async (req, res, next) => {
   try {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 5;
+    const status =
+      req.user.role === USER_ROLES.SHOPPER ? STATUS.ACTIVE : STATUS.INACTIVE;
 
-    const { stores, totalStores } = await storeService.getStores(page, limit);
+    const { stores, totalStores } = await storeService.getStores(page, limit, status);
 
     res.status(200).json({
       success: true,
